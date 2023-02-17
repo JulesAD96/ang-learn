@@ -1,14 +1,31 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthComponent } from './auth/auth.component';
-import { AdminComponent } from './admin/admin.component';
-import { AuthGuard } from './auth.guard';
+import { HomeComponent } from './components/home/home.component';
+import { UserListComponent } from './components/user-list/user-list.component';
+import { UserComponent } from './components/user/user.component';
+import { UserResolverService } from './services/user-resolver.service';
 
 
 const routes: Routes = [
-  { path:"", pathMatch:'full', redirectTo:'login'},
-  { path: 'auth', component: AuthComponent},
-  { path: 'admin', component: AdminComponent, canActivate: [AuthGuard] }
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent, data: { breadcrumb: 'Home' } },
+  {
+    path: 'users',
+    component: UserListComponent,
+    data: { breadcrumb: 'Users' },
+    children: [
+      {
+        path: ':id',
+        component: UserComponent,
+        data: {
+          breadcrumb: (data: any) => {
+            return `${data.user.name}`;
+          },
+        },
+        resolve: { user: UserResolverService },
+      },
+    ],
+  },
 ];
 
 @NgModule({
